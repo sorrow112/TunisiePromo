@@ -1,0 +1,87 @@
+{
+  "project_info": {
+    "project_number": "968825254184",
+    "firebase_url": "https://test3-8ea5f-default-rtdb.firebaseio.com",
+    "project_id": "test3-8ea5f",
+    "storage_bucket": "test3-8ea5f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968825254184:android:6c076ee25c7cfbaa2da01d",
+        "android_client_info": {
+          "package_name": "com.example.authentication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBZ7pMyRAVRRsHK19ufzQOnMA6MXJnHlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968825254184:android:60ff2168b40847b02da01d",
+        "android_client_info": {
+          "package_name": "com.example.notification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBZ7pMyRAVRRsHK19ufzQOnMA6MXJnHlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968825254184:android:cb9e24e0c8099d5d2da01d",
+        "android_client_info": {
+          "package_name": "com.example.recyclerviewapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBZ7pMyRAVRRsHK19ufzQOnMA6MXJnHlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968825254184:android:70ecbc4bd4fe85dc2da01d",
+        "android_client_info": {
+          "package_name": "com.example.tunisiepromo_miniproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBZ7pMyRAVRRsHK19ufzQOnMA6MXJnHlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
