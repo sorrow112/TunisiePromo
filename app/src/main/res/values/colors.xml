@@ -4,5 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="main">#DB3022</color>
     <color name="success">#2AA952</color>
+    <color name="grey">#808080</color>
+
 
 </resources>

@@ -38,6 +38,9 @@ public class Profile {
         this.avatar = avatar;
     }
 
+    public Profile() {
+    }
+
     public String getRole() {
         return role;
     }

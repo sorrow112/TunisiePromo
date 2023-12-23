@@ -117,13 +117,6 @@ public class RegisterActivity extends AppCompatActivity {
                                                 });
                                     }
                                     if (user != null) {
-                                        // Assuming you have a 'users' node in your database
-                                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
-
-                                        // Save additional user information (name and birthdate) to the database
-                                        userRef.child("name").setValue(nom);
-                                        userRef.child("birthdate").setValue(birthdate);
-
                                         user.sendEmailVerification()
                                                 .addOnCompleteListener(taskk -> {
                                                     if (taskk.isSuccessful()) {

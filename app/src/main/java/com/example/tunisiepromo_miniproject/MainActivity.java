@@ -45,29 +45,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        // Lorsque l'utilisateur clique sur le bouton de connexion
         loginButton.setOnClickListener(view -> {
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
-            // Ajoutez ici les contrôles de saisie nécessaires
-
-            // Utilisez le service d'authentification Firebase pour la connexion
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
-                            // L'utilisateur est connecté avec succès
-                            // Ajoutez ici le code à exécuter après la connexion réussie
                             user = mAuth.getCurrentUser();
                             if (user != null) {
                                 if (user.isEmailVerified()) {
-// L'e-mail de l'utilisateur a été vérifié
-// Ajoutez ici le code à exécuter pour un utilisateur vérifié
                                     Toast.makeText(MainActivity.this, "Authentication success.",
                                             Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, mainPageActivity.class);
+                                    Intent intent = new Intent(MainActivity.this, AddPromoActivity.class);
                                     startActivity(intent);
                                 } else {
-// L'utilisateur n'a pas vérifié son e-mail, affichez un message ouprenez des mesures supplémentaires
                                     Toast.makeText(MainActivity.this, "il fault valider votre email.",
                                             Toast.LENGTH_SHORT).show();
                                 }
