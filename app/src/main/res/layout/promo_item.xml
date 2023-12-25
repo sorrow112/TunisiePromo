@@ -31,8 +31,15 @@
                 android:orientation="vertical"
                 android:paddingLeft="3dp"
                 >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    >
                 <RatingBar
                     android:id="@+id/ratingBar"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:numStars="5"
@@ -40,6 +47,15 @@
                     android:rating="0.0"
                     android:progressTint="#FFFF00"
                     style="?android:attr/ratingBarStyleSmall"/>
+                    <TextView
+                        android:id="@+id/count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp"
+                        android:text="(0)"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/grey"/>
+                </LinearLayout>
                 <TextView
                     android:id="@+id/textViewMerchant"
                     android:layout_width="wrap_content"
@@ -55,6 +71,14 @@
                     android:textSize="18dp"
                     android:text="name"
                     android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/endDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    android:text="fini le : 12/12/2024"
+                    android:textColor="@color/grey"
                     />
                 <LinearLayout
                     android:layout_width="wrap_content"

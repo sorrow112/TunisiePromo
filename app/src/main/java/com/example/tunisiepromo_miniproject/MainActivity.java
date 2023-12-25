@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (user.isEmailVerified()) {
                                     Toast.makeText(MainActivity.this, "Authentication success.",
                                             Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, AddPromoActivity.class);
+                                    Intent intent = new Intent(MainActivity.this, mainPageActivity.class);
                                     startActivity(intent);
                                 } else {
                                     Toast.makeText(MainActivity.this, "il fault valider votre email.",

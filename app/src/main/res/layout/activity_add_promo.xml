@@ -58,6 +58,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+        android:id="@+id/pickTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temps de fin" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:textSize="15dp"
+        android:text=""
+        android:id="@+id/dateTime" />
+</LinearLayout>
+
 
     <Button
         android:id="@+id/buttonSelectImage"

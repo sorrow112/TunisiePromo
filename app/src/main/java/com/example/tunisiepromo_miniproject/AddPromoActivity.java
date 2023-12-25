@@ -4,19 +4,27 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,15 +40,21 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class AddPromoActivity extends AppCompatActivity {
+
+public class AddPromoActivity extends AppCompatActivity implements OnDateTimeSetListener {
 
     private EditText productNameEditText;
     private EditText discountEditText;
     private EditText productPriceEditText;
     private ImageView productImageView;
+    private Button pickTime;
+    private TextView dateTimeTextView;
+    private Date endDate;
 
     private Uri selectedImageUri;
     String category = "other";
@@ -48,14 +62,25 @@ public class AddPromoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_promo);
+        pickTime = findViewById(R.id.pickTime);
         productNameEditText = findViewById(R.id.nomEditText);
         discountEditText = findViewById(R.id.discountEditText);
         productPriceEditText = findViewById(R.id.priceEditText);
         productImageView = findViewById(R.id.imageViewProduct);
+        dateTimeTextView = findViewById(R.id.dateTime);
+        endDate = new Date();
         Button selectImageButton = findViewById(R.id.buttonSelectImage);
         Log.d("categories", "fetching categories");
         fetchCategories();
         Spinner categorySpinner = findViewById(R.id.categorySpinner);
+
+        pickTime.setOnClickListener(new AdapterView.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                showDateTimePicker();
+            }
+        });
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -105,44 +130,46 @@ public class AddPromoActivity extends AppCompatActivity {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    // Check if there's a matching profile
+
                     if (dataSnapshot.exists()) {
-                        // Since UIDs are unique, there should be only one match
+
                         for (DataSnapshot profileSnapshot : dataSnapshot.getChildren()) {
-                            // Retrieve the profile data
+
                             Profile profile = profileSnapshot.getValue(Profile.class);
                             UploadTask uploadTask = storageRef.putFile(selectedImageUri);
                             uploadTask.addOnSuccessListener(taskSnapshot -> {
                                 storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     String imageUrl = uri.toString();
-//                    String productId="product_5";
+
                                     double price=Double.valueOf(productPrice);
                                     int disc = Integer.valueOf(discount);
                                     String pushKey = database.getReference("promos").push().getKey();
                                     //pushKey,productName,price,disc, imageUrl,0,profile.getNom(),profile.getUid()
-                                    Promo product = new Promo(category,pushKey,profile.getUid(),productName,price,disc,imageUrl,0,profile.getNom());
+                                    Promo product = new Promo(endDate,category,pushKey,profile.getUid(),productName,price,disc,imageUrl,profile.getNom());
 
-                                    // Assuming you have a "products" node in your database
+
                                     database.getReference("promos").child(pushKey).setValue(product);
-
-                                    finish();
+                                    Intent intent = new Intent(AddPromoActivity.this, mainPageActivity.class);
+                                    startActivity(intent);
+//                                    finish();
                                 });
                             }).addOnFailureListener(e -> {
-                                // Handle unsuccessful uploads
-                                // ...
+
                             });
 
                         }
-                    } else {
-                        // No profile with the specified UID found
-                    }}
+                    } }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle error
                     }
                 });
 
         }
+    }
+    private void showDateTimePicker() {
+
+        DatePickerFragment datePickerFragment = new DatePickerFragment(this);
+        datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     private final ActivityResultLauncher<Intent> getContent =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -184,6 +211,51 @@ public class AddPromoActivity extends AppCompatActivity {
                 Log.e("AddPromoActivity", "Database error: " + error.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onDateTimeSet(int year, int month, int day, int hourOfDay, int minute) {
+
+        String dateTime = String.format(Locale.getDefault(), "%04d-%02d-%02d %02d:%02d", year, month + 1, day, hourOfDay, minute);
+
+        dateTimeTextView.setText(dateTime);
+        Log.d("DateTimeSelected", dateTime);
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+
+        endDate = calendar.getTime();
+    }
+
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        private OnDateTimeSetListener listener;
+
+        public DatePickerFragment(OnDateTimeSetListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker.
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            // Create a new instance of DatePickerDialog and return it.
+            return new DatePickerDialog(requireContext(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+
+            listener.onDateTimeSet(year, month, day, 23, 59);
+        }
     }
 
 

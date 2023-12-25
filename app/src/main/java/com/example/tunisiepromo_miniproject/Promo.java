@@ -1,15 +1,23 @@
 package com.example.tunisiepromo_miniproject;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class Promo {
     private String productId;
     private String name;
     private double price;
     private int discount;
     private String imageUrl;
-    private float rating;
+    private List<Rating> ratings;
     private String merchant;
     private String merchantId;
     private String category;
+    private Date endDate;
+
+    private int ratingsCount;
+
 
     public String getMerchantId() {
         return merchantId;
@@ -43,30 +51,62 @@ public class Promo {
         this.merchant = merchant;
     }
 
-    public Promo(String category,String productId,String merchantId, String name, double price, int discount, String imageUrl, float rating, String merchant) {
+    public Promo(Date endDate,String category,String productId,String merchantId, String name, double price, int discount, String imageUrl,  String merchant) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.discount = discount;
         this.imageUrl = imageUrl;
-        this.rating = rating;
+        this.ratings = new ArrayList<Rating>();
         this.merchant = merchant;
         this.merchantId = merchantId;
         this.category = category;
+        this.endDate = endDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public int getRatingsCount() {
+        return ratingsCount;
+    }
+
+    public void setRatingsCount(int ratingsCount) {
+        this.ratingsCount = ratingsCount;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     public Promo() {
     }
 
-    public float getRating() {
-        return rating;
+    public float getRatingAvg() {
+        if(ratingsCount==0){
+            return 0;
+        }
+        float avg = 0;
+        for (int i = 0; i < ratingsCount; i++) {
+            avg+=ratings.get(i).getRating();
+        }
+        return avg/ratingsCount;
     }
 
-    public void setRating(float rating) {
-        this.rating = rating;
-    }
 // Constructor, getters, and setters
-
+    public void addRating(Rating rating){
+        this.ratings.add(rating);
+        ratingsCount++;
+    }
 
     public String getProductId() {
         return productId;
