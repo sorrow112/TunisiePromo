@@ -74,7 +74,6 @@ public class ClientProfileActivity extends AppCompatActivity {
             }
         });
 
-        bottomNavigationView.setSelectedItemId(R.id.homeNav);
         FirebaseUser user =
                 FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();

@@ -1,6 +1,7 @@
 package com.example.tunisiepromo_miniproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,7 +51,7 @@ public class PromosAdapter extends RecyclerView.Adapter<PromosAdapter.ProductVie
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Promo product = promoList.get(position);
-
+        View itemView = holder.itemView;
         // Bind data to views
         holder.productName.setText(product.getName());
         holder.productPrice.setText(String.valueOf(product.getPrice()));
@@ -115,6 +116,18 @@ public class PromosAdapter extends RecyclerView.Adapter<PromosAdapter.ProductVie
 
                 DatabaseReference promoRef = FirebaseDatabase.getInstance().getReference().child("promos").child(product.getProductId());
                 promoRef.setValue(product);
+            }
+        });
+        holder.merchant.setClickable(true);
+        Context context = itemView.getContext();
+        holder.merchant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create an Intent to start the second activity
+                Intent intent = new Intent(context, ConsultMerchantActivity.class);
+                intent.putExtra("uid",product.getMerchantId());
+                // Start the second activity
+                context.startActivity(intent);
             }
         });
         // Use Glide to load the image from the URL

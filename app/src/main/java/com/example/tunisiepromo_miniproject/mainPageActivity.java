@@ -7,11 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -40,6 +44,25 @@ public class mainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+        fetchCategories();
+        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String categoryy = (String) parentView.getItemAtPosition(position);
+                if(categoryy.equals("selectionner une categorie")){
+                    return;
+                }
+                Intent i = new Intent(mainPageActivity.this, CategoryListingActivity.class);
+                i.putExtra("category",(String) parentView.getItemAtPosition(position));
+                startActivity(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+        });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -129,5 +152,36 @@ public class mainPageActivity extends AppCompatActivity {
                         // Handle error
                     });
         }
+    }
+    private void fetchCategories() {
+        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("categories");
+
+        categoriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    List<String> categoriesList = new ArrayList<>();
+                    categoriesList.add("selectionner une categorie");
+
+                    for (DataSnapshot categorySnapshot : snapshot.getChildren()) {
+                        String category = categorySnapshot.getValue(String.class);
+                        categoriesList.add(category);
+                    }
+
+                    Spinner categorySpinner = findViewById(R.id.categorySpinner);
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(mainPageActivity.this, android.R.layout.simple_spinner_item, categoriesList);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    categorySpinner.setAdapter(adapter);
+                } else {
+                    Log.e("AddPromoActivity", "No categories found in the database");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("AddPromoActivity", "Database error: " + error.getMessage());
+            }
+        });
     }
 }

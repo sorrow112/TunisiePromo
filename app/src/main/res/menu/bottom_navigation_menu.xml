@@ -3,17 +3,17 @@
     <item
         android:id="@+id/homeNav"
         android:enabled="true"
-        android:icon="@mipmap/home"
+        android:icon="@drawable/homee_foreground"
         
         android:title="acceuil"/>
     <item
         android:id="@+id/searchNav"
         android:enabled="true"
-        android:icon="@mipmap/search"
+        android:icon="@drawable/searchh_foreground"
         android:title="recherche"/>
     <item
         android:id="@+id/profileNav"
         android:enabled="true"
-        android:icon="@mipmap/user"
+        android:icon="@drawable/userr_foreground"
         android:title="profil"/>
 </menu>

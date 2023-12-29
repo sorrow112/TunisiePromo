@@ -6,12 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,14 +31,12 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MerchantProfileActivity extends AppCompatActivity {
-
-        private ImageView avatar;
-        private TextView title;
-        private TextView name;
-        private TextView email;
-        private TextView birthdate;
-        private TextView location;
+public class ConsultMerchantActivity extends AppCompatActivity {
+    private ImageView avatar;
+    private TextView title;
+    private TextView name;
+    private TextView birthdate;
+    private TextView location;
     private RecyclerView recyclerView;
     private PromosAdapterVertical productAdapter;
     private List<Promo> productList;
@@ -44,7 +44,7 @@ public class MerchantProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_merchant_profile);
+        setContentView(R.layout.activity_consult_merchant);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -63,17 +63,17 @@ public class MerchantProfileActivity extends AppCompatActivity {
                                 Profile profile = profileSnapshot.getValue(Profile.class);
                                 if(menuItem.getItemId()==R.id.homeNav){
                                     if(profile.getRole().equals("vendeur")){
-                                        startActivity(new Intent(MerchantProfileActivity.this, MerchantDashboardActivity.class));
+                                        startActivity(new Intent(ConsultMerchantActivity.this, MerchantDashboardActivity.class));
                                     }else{
-                                        startActivity(new Intent(MerchantProfileActivity.this, mainPageActivity.class));
+                                        startActivity(new Intent(ConsultMerchantActivity.this, mainPageActivity.class));
                                     }
                                 } else if (menuItem.getItemId()==R.id.searchNav) {
-                                    startActivity(new Intent(MerchantProfileActivity.this, RechercheActivity.class));
+                                    startActivity(new Intent(ConsultMerchantActivity.this, RechercheActivity.class));
                                 }else{
                                     if(profile.getRole().equals("vendeur")){
-                                        startActivity(new Intent(MerchantProfileActivity.this, MerchantProfileActivity.class));
+                                        startActivity(new Intent(ConsultMerchantActivity.this, MerchantProfileActivity.class));
                                     }else{
-                                        startActivity(new Intent(MerchantProfileActivity.this, ClientProfileActivity.class));
+                                        startActivity(new Intent(ConsultMerchantActivity.this, ClientProfileActivity.class));
                                     }
                                 }
                             }}
@@ -88,10 +88,20 @@ public class MerchantProfileActivity extends AppCompatActivity {
                 return true;
             }
         });
-        FirebaseUser user =
-                FirebaseAuth.getInstance().getCurrentUser();
-        String uid = user.getUid();
-        String myEmail = user.getEmail();
+        Bundle extras = getIntent().getExtras();
+        String uid = extras.getString("uid");
+        location = (TextView)findViewById(R.id.location);
+        location.setClickable(true);
+        location.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse((String)location.getText()));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No app to handle this action", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         DatabaseReference profilesRef = FirebaseDatabase.getInstance().getReference("profiles");
         Query query = profilesRef.orderByChild("uid").equalTo(uid);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -104,14 +114,12 @@ public class MerchantProfileActivity extends AppCompatActivity {
                         title = (TextView)findViewById(R.id.title);
                         avatar = (ImageView) findViewById(R.id.imageView1);
                         name = (TextView)findViewById(R.id.nom);
-                        email = (TextView)findViewById(R.id.email);
                         birthdate = (TextView)findViewById(R.id.birthdate);
                         location = (TextView)findViewById(R.id.location);
                         title.setText(profile.getNom());
                         location.setText(profile.getLocation());
                         name.setText(profile.getNom());
                         Picasso.get().load(profile.getAvatar()).into(avatar);
-                        email.setText(myEmail);
                         birthdate.setText(profile.getBirthdate());
 
                     }}
@@ -128,6 +136,7 @@ public class MerchantProfileActivity extends AppCompatActivity {
         productList = new ArrayList<>();
         productAdapter = new PromosAdapterVertical(productList, this);
         recyclerView.setAdapter(productAdapter);
+
 
 
 // Fetch product data from Firebase Realtime Database
