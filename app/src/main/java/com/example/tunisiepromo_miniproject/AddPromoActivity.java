@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,6 +56,7 @@ public class AddPromoActivity extends AppCompatActivity implements OnDateTimeSet
     private ImageView productImageView;
     private Button pickTime;
     private TextView dateTimeTextView;
+
     private Date endDate;
 
     private Uri selectedImageUri;
@@ -62,6 +65,49 @@ public class AddPromoActivity extends AppCompatActivity implements OnDateTimeSet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_promo);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                FirebaseUser user =
+                        FirebaseAuth.getInstance().getCurrentUser();
+                String uid = user.getUid();
+                DatabaseReference profilesRef = FirebaseDatabase.getInstance().getReference("profiles");
+                Query query = profilesRef.orderByChild("uid").equalTo(uid);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot profileSnapshot : dataSnapshot.getChildren()) {
+                                // Retrieve the profile data
+                                Profile profile = profileSnapshot.getValue(Profile.class);
+                                if(menuItem.getItemId()==R.id.homeNav){
+                                    if(profile.getRole().equals("vendeur")){
+                                        startActivity(new Intent(AddPromoActivity.this, MerchantDashboardActivity.class));
+                                    }else{
+                                        startActivity(new Intent(AddPromoActivity.this, mainPageActivity.class));
+                                    }
+                                } else if (menuItem.getItemId()==R.id.searchNav) {
+                                    startActivity(new Intent(AddPromoActivity.this, RechercheActivity.class));
+                                }else{
+                                    if(profile.getRole().equals("vendeur")){
+                                        startActivity(new Intent(AddPromoActivity.this, MerchantProfileActivity.class));
+                                    }else{
+                                        startActivity(new Intent(AddPromoActivity.this, ClientProfileActivity.class));
+                                    }
+                                }
+                            }}
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle database error
+                    }
+                });
+
+                return true;
+            }
+        });
         pickTime = findViewById(R.id.pickTime);
         productNameEditText = findViewById(R.id.nomEditText);
         discountEditText = findViewById(R.id.discountEditText);

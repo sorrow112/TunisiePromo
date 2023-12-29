@@ -2,10 +2,14 @@ package com.example.tunisiepromo_miniproject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,18 +22,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-public class ClientProfileActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MerchantProfileActivity extends AppCompatActivity {
+
     private ImageView avatar;
     private TextView title;
     private TextView name;
     private TextView email;
     private TextView birthdate;
+    private TextView location;
+    private RecyclerView recyclerView;
+    private PromosAdapterVertical productAdapter;
+    private List<Promo> productList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client_profile);
+        setContentView(R.layout.activity_merchant_profile);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -48,17 +63,17 @@ public class ClientProfileActivity extends AppCompatActivity {
                                 Profile profile = profileSnapshot.getValue(Profile.class);
                                 if(menuItem.getItemId()==R.id.homeNav){
                                     if(profile.getRole().equals("vendeur")){
-                                        startActivity(new Intent(ClientProfileActivity.this, MerchantDashboardActivity.class));
+                                        startActivity(new Intent(MerchantProfileActivity.this, MerchantDashboardActivity.class));
                                     }else{
-                                        startActivity(new Intent(ClientProfileActivity.this, mainPageActivity.class));
+                                        startActivity(new Intent(MerchantProfileActivity.this, mainPageActivity.class));
                                     }
                                 } else if (menuItem.getItemId()==R.id.searchNav) {
-                                    startActivity(new Intent(ClientProfileActivity.this, RechercheActivity.class));
+                                    startActivity(new Intent(MerchantProfileActivity.this, RechercheActivity.class));
                                 }else{
                                     if(profile.getRole().equals("vendeur")){
-                                        startActivity(new Intent(ClientProfileActivity.this, MerchantProfileActivity.class));
+                                        startActivity(new Intent(MerchantProfileActivity.this, MerchantProfileActivity.class));
                                     }else{
-                                        startActivity(new Intent(ClientProfileActivity.this, ClientProfileActivity.class));
+                                        startActivity(new Intent(MerchantProfileActivity.this, ClientProfileActivity.class));
                                     }
                                 }
                             }}
@@ -73,8 +88,6 @@ public class ClientProfileActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        bottomNavigationView.setSelectedItemId(R.id.homeNav);
         FirebaseUser user =
                 FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();
@@ -93,7 +106,9 @@ public class ClientProfileActivity extends AppCompatActivity {
                         name = (TextView)findViewById(R.id.nom);
                         email = (TextView)findViewById(R.id.email);
                         birthdate = (TextView)findViewById(R.id.birthdate);
+                        location = (TextView)findViewById(R.id.location);
                         title.setText(profile.getNom());
+                        location.setText(profile.getLocation());
                         name.setText(profile.getNom());
                         Picasso.get().load(profile.getAvatar()).into(avatar);
                         email.setText(myEmail);
@@ -107,5 +122,49 @@ public class ClientProfileActivity extends AppCompatActivity {
                 // Handle database error
             }
         });
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true));
+
+        productList = new ArrayList<>();
+        productAdapter = new PromosAdapterVertical(productList, this);
+        recyclerView.setAdapter(productAdapter);
+
+
+// Fetch product data from Firebase Realtime Database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("/promos");
+        Query userPromosQuery = databaseReference.orderByChild("uid").equalTo(uid);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                productList.clear();
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Promo product = dataSnapshot.getValue(Promo.class);
+                    productList.add(product);
+                }
+
+                productAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+
+// ...
+
+// Fetch image URLs from Firebase Storage
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("product_images");
+        for (Promo product : productList) {
+            storageReference.child(product.getImageUrl()).getDownloadUrl()
+                    .addOnSuccessListener(uri -> {
+                        product.setImageUrl(uri.toString());
+                        productAdapter.notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle error
+                    });
+        }
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeNav"
+        android:enabled="true"
+        android:icon="@mipmap/home"
+        android:title="acceuil"/>
+    <item
+        android:id="@+id/searchNav"
+        android:enabled="true"
+        android:icon="@mipmap/search"
+        android:title="recherche"/>
+    <item
+        android:id="@+id/profileNav"
+        android:enabled="true"
+        android:icon="@mipmap/user"
+        android:title="profil"/>
+</menu>

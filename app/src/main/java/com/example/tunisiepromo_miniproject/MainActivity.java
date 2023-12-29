@@ -1,5 +1,6 @@
 package com.example.tunisiepromo_miniproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -14,6 +15,12 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -56,8 +63,35 @@ public class MainActivity extends AppCompatActivity {
                                 if (user.isEmailVerified()) {
                                     Toast.makeText(MainActivity.this, "Authentication success.",
                                             Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, mainPageActivity.class);
-                                    startActivity(intent);
+                                    FirebaseUser user =
+                                            FirebaseAuth.getInstance().getCurrentUser();
+                                    String uid = user.getUid();
+                                    DatabaseReference profilesRef = FirebaseDatabase.getInstance().getReference("profiles");
+                                    Query query = profilesRef.orderByChild("uid").equalTo(uid);
+                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                for (DataSnapshot profileSnapshot : dataSnapshot.getChildren()) {
+                                                    // Retrieve the profile data
+                                                    Profile profile = profileSnapshot.getValue(Profile.class);
+                                                    if(profile.getRole().equals("vendeur")){
+                                                        Intent intent = new Intent(MainActivity.this, MerchantDashboardActivity.class);
+                                                        startActivity(intent);
+                                                    }else{
+                                                        Intent intent = new Intent(MainActivity.this, mainPageActivity.class);
+                                                        startActivity(intent);
+                                                    }
+
+                                                }}
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            // Handle database error
+                                        }
+                                    });
+
                                 } else {
                                     Toast.makeText(MainActivity.this, "il fault valider votre email.",
                                             Toast.LENGTH_SHORT).show();

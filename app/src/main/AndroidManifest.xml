@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Tunisiepromo_miniproject"
         tools:targetApi="31">
         <activity
+            android:name=".RechercheActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MerchantProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ClientProfileActivity"
             android:exported="false" />
         <activity

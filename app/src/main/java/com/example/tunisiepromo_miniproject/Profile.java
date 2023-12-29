@@ -5,6 +5,15 @@ public class Profile {
     private String birthdate;
     private String nom;
     private String role;
+    private String location;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     public String getUid() {
         return uid;
@@ -30,12 +39,13 @@ public class Profile {
         this.nom = nom;
     }
 
-    public Profile(String uid, String birthdate, String nom, String role, String avatar) {
+    public Profile(String uid, String birthdate, String nom, String role, String avatar,String location) {
         this.uid = uid;
         this.birthdate = birthdate;
         this.nom = nom;
         this.role = role;
         this.avatar = avatar;
+        this.location = location;
     }
 
     public Profile() {

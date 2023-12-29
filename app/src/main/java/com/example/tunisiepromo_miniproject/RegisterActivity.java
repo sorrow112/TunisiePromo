@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -38,12 +39,13 @@ import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private TextInputEditText emailEditText, birthdateEditText,passwordInput,nomInput;
+    private TextInputEditText emailEditText, birthdateEditText,passwordInput,nomInput,locationInput;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private FirebaseAuth mAuth;
     private ImageView ImageViewAvatar;
     private Uri selectedImageUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         birthdateEditText = (TextInputEditText) findViewById(R.id.birthdateEditText);
         passwordInput = (TextInputEditText) findViewById(R.id.passwordEditText);
         nomInput = (TextInputEditText) findViewById(R.id.nomEditText);
+        locationInput = (TextInputEditText) findViewById(R.id.LocationEditext);
         ImageViewAvatar = findViewById(R.id.imageViewAvatar);
         Button selectImageButton = findViewById(R.id.buttonSelectImage);
         selectImageButton.setOnClickListener(new View.OnClickListener() {
@@ -73,10 +76,13 @@ public class RegisterActivity extends AppCompatActivity {
                     String password = passwordInput.getText().toString();
                     String nom = nomInput.getText().toString();
                     radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+                    String radioButtonValue="";
+                    String location = locationInput.getText().toString();
                     int selectedId = radioGroup.getCheckedRadioButtonId();
                     if (selectedId != -1) {
                         radioButton = findViewById(selectedId);
-                        String radioButtonValue = radioButton.getText().toString();
+                        radioButtonValue = radioButton.getText().toString();
+
                     } else {
                         // Handle the case where no radio button is selected
                     }
@@ -100,8 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                             uploadTask.addOnSuccessListener(taskSnapshot -> {
                                                                 storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                                                     String imageUrl = uri.toString();
-                                                                    Profile profile = new Profile(uid,birthdate,nom,radioButton.getText().toString(),imageUrl);
-                                                                    // Assuming you have a "products" node in your database
+                                                                    Profile profile = new Profile(uid,birthdate,nom,radioButton.getText().toString(),imageUrl,location);
 
                                                                     database.getReference("profiles").child(pushKey).setValue(profile);
                                                                     finish();
