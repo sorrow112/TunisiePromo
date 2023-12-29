@@ -21,7 +21,7 @@
             <ImageView
                 android:id="@+id/imageViewProduct"
                 android:layout_width="150dp"
-                android:layout_height="184dp"
+                android:layout_height="126dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/signup_image"
                 />

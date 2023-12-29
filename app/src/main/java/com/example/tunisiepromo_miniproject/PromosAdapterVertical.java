@@ -39,6 +39,10 @@ public class PromosAdapterVertical extends RecyclerView.Adapter<PromosAdapterVer
         this.promoList = productList;
         this.context = context;
     }
+    public void setData(List<Promo> newData) {
+        promoList = newData;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override

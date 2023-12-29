@@ -4,6 +4,7 @@
         android:id="@+id/homeNav"
         android:enabled="true"
         android:icon="@mipmap/home"
+        
         android:title="acceuil"/>
     <item
         android:id="@+id/searchNav"

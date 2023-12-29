@@ -29,7 +29,7 @@ import java.util.List;
 public class MerchantDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private PromosAdapter productAdapter;
+    private PromosAdapterVertical productAdapter;
     private List<Promo> productList;
     private Button addprodBtn;
 
@@ -82,7 +82,7 @@ public class MerchantDashboardActivity extends AppCompatActivity {
         });
         addprodBtn = (Button)findViewById(R.id.btnAddProduct);
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
 
         addprodBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,14 +92,14 @@ public class MerchantDashboardActivity extends AppCompatActivity {
             }
         });
         productList = new ArrayList<>();
-        productAdapter = new PromosAdapter(productList, this);
+        productAdapter = new PromosAdapterVertical(productList, this);
         recyclerView.setAdapter(productAdapter);
 
 
 // Fetch product data from Firebase Realtime Database
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("/promos");
-        Query userPromosQuery = databaseReference.orderByChild("uid").equalTo(userUid);
+        Query userPromosQuery = databaseReference.orderByChild("merchantId").equalTo(userUid);
         userPromosQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
